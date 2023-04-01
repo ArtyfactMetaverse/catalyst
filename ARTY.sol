@@ -1,6 +1,6 @@
 /**
  *Submitted for verification at BscScan.com on 2022-06-11
- */
+*/
 
 // SPDX-License-Identifier: MIT
 //owner: 0x68EF547299A661401aAb3f716D27a29561BE29dB
@@ -24,13 +24,13 @@ interface IBEP20 {
     function symbol() external view returns (string memory);
 
     /**
-     * @dev Returns the token name.
-     */
+    * @dev Returns the token name.
+    */
     function name() external view returns (string memory);
 
     /**
-     * @dev Returns the bep token owner.
-     */
+    * @dev Returns the bep token owner.
+    */
     function getOwner() external view returns (address);
 
     /**
@@ -45,10 +45,7 @@ interface IBEP20 {
      *
      * Emits a {Transfer} event.
      */
-    function transfer(
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+    function transfer(address recipient, uint256 amount) external returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -57,10 +54,7 @@ interface IBEP20 {
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(
-        address owner,
-        address spender
-    ) external view returns (uint256);
+    function allowance(address owner, address spender) external view returns (uint256);
 
     /**
      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -87,11 +81,7 @@ interface IBEP20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 
     /**
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
@@ -105,11 +95,7 @@ interface IBEP20 {
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
      * a call to {approve}. `value` is the new allowance.
      */
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
-    );
+    event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
 abstract contract Context {
@@ -126,15 +112,13 @@ abstract contract Context {
 contract Ownable is Context {
     address private _owner;
 
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /**
      * @dev Initializes the contract setting the deployer as the initial owner.
      */
-    constructor(address _tokenOwner) {
+    constructor (address _tokenOwner) {
+        require(_tokenOwner != address(0), "Ownable: owner is the zero address");
         _owner = _tokenOwner;
         emit OwnershipTransferred(address(0), _owner);
     }
@@ -150,7 +134,7 @@ contract Ownable is Context {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(_owner == _msgSender(), 'Ownable: caller is not the owner');
+        require(_owner == _msgSender(), "Ownable: caller is not the owner");
         _;
     }
 
@@ -178,24 +162,22 @@ contract Ownable is Context {
      * @dev Transfers ownership of the contract to a new account (`newOwner`).
      */
     function _transferOwnership(address newOwner) internal {
-        require(
-            newOwner != address(0),
-            'Ownable: new owner is the zero address'
-        );
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
 }
 
 contract Artyfact is Context, IBEP20, Ownable {
-    address private _ultimateOwner = 0x68EF547299A661401aAb3f716D27a29561BE29dB;
+    address private constant ULTIMATE_OWNER = 0xfC469C1569585F131Ad21724796dbD56687524D2;
 
-    mapping(address => uint256) private _balances;
-    mapping(address => mapping(address => uint256)) private _allowances;
+    mapping (address => uint256) private _balances;
+    mapping (address => mapping (address => uint256)) private _allowances;
 
-    string private constant _name = 'Artyfact';
-    string private constant _symbol = 'ARTY';
+    string private constant NAME = "Artyfact";
+    string private constant SYMBOL = "ARTY";
     uint256 private _totalSupply;
+
 
     /**
      * @dev Sets the values for {name} and {symbol}.
@@ -206,17 +188,17 @@ contract Artyfact is Context, IBEP20, Ownable {
      * All three of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor() Ownable(_ultimateOwner) {
+    constructor() Ownable(ULTIMATE_OWNER) {
         _totalSupply = 25000000 * 10 ** uint256(decimals());
-        _balances[_ultimateOwner] = _totalSupply;
-        emit Transfer(address(0), _ultimateOwner, _totalSupply);
+        _balances[ULTIMATE_OWNER] = _totalSupply;
+        emit Transfer(address(0) , ULTIMATE_OWNER, _totalSupply);
     }
 
     /**
      * @dev Returns the name of the token.
      */
     function name() external view virtual override returns (string memory) {
-        return _name;
+        return NAME;
     }
 
     /**
@@ -224,7 +206,7 @@ contract Artyfact is Context, IBEP20, Ownable {
      * name.
      */
     function symbol() external view virtual override returns (string memory) {
-        return _symbol;
+        return SYMBOL;
     }
 
     /**
@@ -248,7 +230,7 @@ contract Artyfact is Context, IBEP20, Ownable {
      * @dev Returns the bep token owner.
      * https://github.com/binance-chain/BEPs/blob/master/BEP20.md
      */
-    function getOwner() external view virtual override returns (address) {
+    function getOwner() external virtual override view returns (address) {
         return owner();
     }
 
@@ -262,9 +244,7 @@ contract Artyfact is Context, IBEP20, Ownable {
     /**
      * @dev See {IBEP20-balanceOf}.
      */
-    function balanceOf(
-        address account
-    ) external view virtual override returns (uint256) {
+    function balanceOf(address account) external view virtual override returns (uint256) {
         return _balances[account];
     }
 
@@ -276,25 +256,19 @@ contract Artyfact is Context, IBEP20, Ownable {
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(
-        address recipient,
-        uint256 amount
-    ) external virtual override returns (bool) {
+    function transfer(address recipient, uint256 amount) external virtual override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
 
-    function burn(address account, uint256 amount) external {
-        _burn(account, amount);
+    function burn(uint256 amount) external {
+        _burn(msg.sender, amount);
     }
 
     /**
      * @dev See {IBEP20-allowance}.
      */
-    function allowance(
-        address owner,
-        address spender
-    ) external view virtual override returns (uint256) {
+    function allowance(address owner, address spender) external view virtual override returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -305,10 +279,7 @@ contract Artyfact is Context, IBEP20, Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(
-        address spender,
-        uint256 amount
-    ) external virtual override returns (bool) {
+    function approve(address spender, uint256 amount) external virtual override returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
@@ -326,21 +297,10 @@ contract Artyfact is Context, IBEP20, Ownable {
      * - the caller must have allowance for ``sender``'s tokens of at least
      * `amount`.
      */
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external virtual override returns (bool) {
-        require(
-            _allowances[sender][_msgSender()] >= amount,
-            'BEP20: transfer amount exceeds allowance'
-        );
+    function transferFrom(address sender, address recipient, uint256 amount) external virtual override returns (bool) {
+        require(_allowances[sender][_msgSender()] >= amount, "BEP20: transfer amount exceeds allowance");
         _transfer(sender, recipient, amount);
-        _approve(
-            sender,
-            _msgSender(),
-            _allowances[sender][_msgSender()] - amount
-        );
+        _approve(sender, _msgSender(), _allowances[sender][_msgSender()] - amount);
 
         return true;
     }
@@ -357,17 +317,12 @@ contract Artyfact is Context, IBEP20, Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(
-        address spender,
-        uint256 addedValue
-    ) external virtual returns (bool) {
-        _approve(
-            _msgSender(),
-            spender,
-            _allowances[_msgSender()][spender] + addedValue
-        );
+    function increaseAllowance(address spender, uint256 addedValue) external virtual returns (bool) {
+        _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
         return true;
     }
+
+    
 
     /**
      * @dev Atomically decreases the allowance granted to `spender` by the caller.
@@ -383,19 +338,9 @@ contract Artyfact is Context, IBEP20, Ownable {
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(
-        address spender,
-        uint256 subtractedValue
-    ) external virtual returns (bool) {
-        require(
-            _allowances[_msgSender()][spender] >= subtractedValue,
-            'BEP20: decreased allowance below zero'
-        );
-        _approve(
-            _msgSender(),
-            spender,
-            _allowances[_msgSender()][spender] - subtractedValue
-        );
+    function decreaseAllowance(address spender, uint256 subtractedValue) external virtual returns (bool) {
+        require(_allowances[_msgSender()][spender] >= subtractedValue, "BEP20: decreased allowance below zero");
+        _approve(_msgSender(), spender, _allowances[_msgSender()][spender] - subtractedValue);
         return true;
     }
 
@@ -413,18 +358,11 @@ contract Artyfact is Context, IBEP20, Ownable {
      * - `recipient` cannot be the zero address.
      * - `sender` must have a balance of at least `amount`.
      */
-    function _transfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal virtual {
-        require(sender != address(0), 'BEP20: transfer from the zero address');
-        require(recipient != address(0), 'BEP20: transfer to the zero address');
+    function _transfer(address sender, address recipient, uint256 amount) internal virtual {
+        require(sender != address(0), "BEP20: transfer from the zero address");
+        require(recipient != address(0), "BEP20: transfer to the zero address");
 
-        require(
-            _balances[sender] >= amount,
-            'BEP20: transfer amount exceeds balance'
-        );
+        require(_balances[sender] >= amount, "BEP20: transfer amount exceeds balance");
         _balances[sender] -= amount;
         _balances[recipient] += amount;
 
@@ -444,31 +382,27 @@ contract Artyfact is Context, IBEP20, Ownable {
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function _approve(
-        address owner,
-        address spender,
-        uint256 amount
-    ) internal virtual {
-        require(owner != address(0), 'BEP20: approve from the zero address');
-        require(spender != address(0), 'BEP20: approve to the zero address');
+    function _approve(address owner, address spender, uint256 amount) internal virtual {
+        require(owner != address(0), "BEP20: approve from the zero address");
+        require(spender != address(0), "BEP20: approve to the zero address");
 
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
 
     function claimToken(IBEP20 token, address to) external onlyOwner {
-        require(to != address(0), 'BNB: call to the zero address');
+        require(to != address(0), "BNB: call to the zero address");
 
         uint256 balance = token.balanceOf(address(this));
         bool sent = token.transfer(to, balance);
-        require(sent, 'Failed to send token');
+        require(sent, "Failed to send token");
     }
 
     function _burn(address account, uint256 amount) internal virtual {
-        require(account != address(0), 'BEP20: burn from the zero address');
+        require(account != address(0), "BEP20: burn from the zero address");
 
         uint256 accountBalance = _balances[account];
-        require(accountBalance >= amount, 'BEP20: burn amount exceeds balance');
+        require(accountBalance >= amount, "BEP20: burn amount exceeds balance");
         unchecked {
             _balances[account] = accountBalance - amount;
             // Overflow not possible: amount <= accountBalance <= totalSupply.
