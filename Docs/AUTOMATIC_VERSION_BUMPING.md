@@ -1,4 +1,4 @@
-# Automatic version bumpin
+# Automatic version bumping
 
 ## Following the convention
 
